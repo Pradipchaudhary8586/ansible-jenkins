@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     echo "Logging into Docker Hub..."
-                    withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
+                    withDockerRegistry([credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/']) {
                         sh "docker push ${dockerImage}:${BUILD_NUMBER}"
                     }
                 }
