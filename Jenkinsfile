@@ -1,7 +1,7 @@
 pipeline{
     agent any
     environment{ 
-        dockerImage = "ravikharel/compose"
+        dockerImage = "pradipchaudhary7/jenkinspipelinesetup"
     }
     stages{
         stage('Building the image'){ 
@@ -32,7 +32,7 @@ pipeline{
         }
         stage('Playing the playbook'){ 
             agent{ 
-                label "ansible-node"
+                label "JenkinsSlave"
             }
             steps{ 
                 sh '''
@@ -51,7 +51,7 @@ pipeline{
         }
         success {
             emailext(
-                to: 'kharel1248@gmail.com',
+                to: 'iampradip.creation@gmail.com',
                 subject: "Jenkins Build ${JOB_NAME} #${BUILD_NUMBER} Success",
                 body: """The build was successful.
                 Check the job at ${BUILD_URL}""",
@@ -60,7 +60,7 @@ pipeline{
         }
         failure {
             emailext(
-                to: 'kharel1248@gmail.com',
+                to: 'iampradip.creation@gmail.com',
                 subject: "Jenkins Build ${JOB_NAME} #${BUILD_NUMBER} Failed",
                 body: """The build failed. Please check the logs at ${BUILD_URL}""",
                 

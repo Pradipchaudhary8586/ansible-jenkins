@@ -2,7 +2,7 @@
 - name: Deploying the application to the web server
   hosts: web
   vars:
-    dockerImage: ravikharel/nginx
+    dockerImage: pradipchaudhary7/nginx
   tasks:
     - name: Pulling the docker image to the web server
       command: "docker pull {{ dockerImage }}:{{ number }}"
