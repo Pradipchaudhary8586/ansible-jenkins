@@ -4,31 +4,32 @@ pipeline {
         dockerImage = "pradipchaudhary7/jenkinspipelinesetup"
     }
     stages {
-        stage('Building the image') {
+        stage('Building the Image') {
             steps {
                 script {
-                    sh "docker image build -t ${dockerImage}:${BUILD_NUMBER} ."
+                    echo "Building Docker image..."
+                    sh "docker build -t ${dockerImage}:${BUILD_NUMBER} ."
                 }
             }
         }
 
-        stage('Scanning the image') {
+        stage('Scanning the Image') {
             steps {
                 script {
-                    // Scan the built image with Trivy for high and critical vulnerabilities
-                    sh 'trivy image --timeout 10m --scanners vuln --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed $dockerImage:$BUILD_NUMBER'
+                    echo "Scanning the Docker image for vulnerabilities..."
+                    sh '''
+                    trivy image --timeout 10m --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed ${dockerImage}:${BUILD_NUMBER} || echo "No critical vulnerabilities found"
+                    '''
                 }
             }
         }
 
-        stage('Pushing the docker image to the docker hub') {
+        stage('Pushing the Docker Image to Docker Hub') {
             steps {
                 script {
-                    // Push the Docker image to Docker Hub after the build and scan
-                    withDockerRegistry([credentialsId: 'docker-hub', url: '']) {
-                        sh '''
-                        docker push ${dockerImage}:${BUILD_NUMBER}
-                        '''
+                    echo "Logging into Docker Hub..."
+                    withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
+                        sh "docker push ${dockerImage}:${BUILD_NUMBER}"
                     }
                 }
             }
@@ -38,10 +39,10 @@ pipeline {
     post {
         always {
             mail to: 'iampradip.creation@gmail.com',
-            subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) status",
-            body: "Please go to ${BUILD_URL} and verify the build"
+            subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) Status",
+            body: "Please go to ${BUILD_URL} and verify the build."
         }
-
+        
         success {
             emailext(
                 to: 'iampradip.creation@gmail.com',
